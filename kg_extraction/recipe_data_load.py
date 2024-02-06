@@ -1,6 +1,8 @@
+"""Functions to load in extracted recipe kg triples as DataFrame and HeteroData objects."""
 import json
 import os
 import re
+from typing import List, Tuple, Dict, Union
 
 import numpy as np
 import pandas as pd
@@ -11,8 +13,6 @@ from sentence_transformers import SentenceTransformer
 from torch_geometric.data import HeteroData
 
 log_sig = torch.nn.LogSigmoid()
-
-from typing import List, Tuple, Dict
 
 
 def get_recipe_subkgs(data_dir: str = './recipe_data') -> List[Tuple[str, List[Dict[str, str]]]]:
@@ -39,7 +39,16 @@ def get_recipe_subkgs(data_dir: str = './recipe_data') -> List[Tuple[str, List[D
 
     return kgs
 
-def get_recipe_kg(data_dir: str = './recipe_data') -> Tuple[pd.DataFrame, np.ndarray]:
+def get_recipe_kg(data_dir: str = './recipe_data') -> pd.DataFrame:
+    """Returns DataFrame containing all triples or recipe subgraphs.
+
+    Returns pd.DataFrame with head, head_type, relation, tail, tail_type, and an indicator `kg_idx` denoting
+    the id of subgraph loaded in.
+
+    :param data_dir: Path to 'recipe_data' folder.
+    :return: Tuple of DataFrame
+
+    """
     kgs = get_recipe_subkgs(data_dir)
     y = []
     y_idx = []
@@ -48,23 +57,33 @@ def get_recipe_kg(data_dir: str = './recipe_data') -> Tuple[pd.DataFrame, np.nda
         y.extend(x[1])
 
     y = pd.DataFrame(y)
-    y_idx = np.asarray(y_idx)
+    y = y.assign(kg_idx=np.asarray(y_idx))
 
-    return y, y_idx
-
+    return y
 
 def kg_to_hetero(data_dir: str,
-                 embeddings_model,
-                 undirected: bool = False) -> Tuple[
-    List[HeteroData], Tuple[pd.DataFrame, np.ndarray], Tuple[Dict[str, tn.Tensor], Dict[str, Dict[str, int]]]]:
-    """
+                 sentence_transformer_model: str = 'all-MiniLM-L6-v2',
+                 undirected: bool = False) -> Dict[str, Union[List[HeteroData], pd.DataFrame,
+                                                              Tuple[Dict[str, Dict[str, int]], Dict[str, tn.Tensor]]]]:
+    """Returns a dictionary containing sequence of HeteroData with embedded features for each subgraph in kg.
 
-    :param embeddings_model:
-    :param undirected:
-    :return:
+    Sentences are treated as features, which are embedded according to SentenceTransformer(sentence_transformer_model).
+
+    The dictionary returns contains:
+        - 'train': List of HeteroData() objects for each subgraph kg with embedded features.
+        - 'kg': DataFrame containing head, head_type, relation, tail, tail_type, and id of subgraphs.
+        - 'embedding_maps': Tuple of dictionaries :
+            (0): Map from node_type to features as sentences and their respective enumerations over the node type
+            (1): Map from node_type to embedded sentences corresponding to the enumeration of features above.
+
+    :param data_dir: Path to 'recipe_data' folder in repo.
+    :param sentence_transformer_model: Model used for SentenceTransformer embeddings. Default 'all-MiniLM-L6-v2'.
+    :param undirected: If True, each subgraph has reversed edges.
+    :return: See above
+
     """
-    kg, kg_idx = get_recipe_kg(data_dir=data_dir)
-    nkgs = np.max(kg_idx)+1
+    kg = get_recipe_kg(data_dir=data_dir)
+    nkgs = kg['kg_idx'].max() + 1
 
     # count all features by node type, we'll use this for mapping embedded node features to HeteroData
     node_map, cnt = dict(), 0
@@ -105,7 +124,7 @@ def kg_to_hetero(data_dir: str,
                 tail_idx = np.where(tmp, node_map[node_type][feat], tail_idx)
 
     # dictionary map of all features for a gvien node type and the corresponding embeddings of text.
-    embeddings_model = SentenceTransformer('all-MiniLM-L6-v2') if embeddings_model is None else embeddings_model
+    embeddings_model = SentenceTransformer(sentence_transformer_model)
     emb_map = dict()
     for node_type in node_map.keys():
         emb_map[node_type] = embeddings_model.encode([x for x in node_map[node_type].keys()])
@@ -118,7 +137,7 @@ def kg_to_hetero(data_dir: str,
         for node_type in node_map.keys():
             data[node_type].x = tn.tensor(emb_map[node_type], dtype=tn.float32)
 
-        kg_i = kg_idx == i
+        kg_i = kg['kg_idx'] == i
         urels = kg[kg_i]['relation'].unique()
 
         for rel in urels:
@@ -150,5 +169,7 @@ def kg_to_hetero(data_dir: str,
 
         train.append(data)
 
-    return train, (kg, kg_idx), (node_map, emb_map)
+    rv = {'train': train, 'kg': kg, 'embedding_maps': (node_map, emb_map)}
+
+    return rv
 

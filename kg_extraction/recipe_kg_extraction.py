@@ -1,14 +1,14 @@
-import json
-import os
-import re
+"""Functions for scraping recipes as kg tripels from https://www.allrecipes.com/."""
 
+import os
+open_ai_key = os.environ.get('OPENAI_API_KEY', None)
+
+import re
+import json
+from typing import Dict, List, Optional
 import requests
 from bs4 import *
 from openai import OpenAI as clientOpenAI
-
-from kg_extraction.recipe_prompts import get_recipe_prompts
-
-open_ai_key = os.environ.get('OPENAI_API_KEY', None)
 
 from llama_index import (
     SimpleDirectoryReader,
@@ -19,7 +19,7 @@ from llama_index import (
 from llama_index.llms import OpenAI as OpenAI
 from llama_index.prompts import PromptTemplate
 
-from typing import Dict, List, Optional
+from kg_extraction.recipe_prompts import get_recipe_prompts
 
 
 def scrape_recipe_websites(websites: List[str], recipes: List[str], data_dir: str) -> None:
@@ -100,15 +100,18 @@ def extract_ingredients_directions(data_dir: str,
         tmp = html_docs[i].metadata['file_name']
         rec = re.sub('_', ' ', tmp.split('.txt')[0])
 
-        res = ingredients_engine.query('Give me a list of the ingredients for %s' % rec)
-        ing_res = 'The ingredients for making ' + rec + ' are ' + res.response
-        dir_res = directions_engine.query('Give me directions for making %s' % rec)
+        if not os.path.exists(data_dir + "/txt_files/" + tmp):
+            res = ingredients_engine.query('Give me a list of the ingredients for %s' % rec)
+            ing_res = 'The ingredients for making ' + rec + ' are ' + res.response
+            dir_res = directions_engine.query('Give me directions for making %s' % rec)
 
-        if verbose:
-            print(f'\n---------------------\n{ing_res}\nDirections: {dir_res.respnse}---------------------\n')
+            if verbose:
+                print(f'\n---------------------\n{ing_res}\nDirections: {dir_res.respnse}---------------------\n')
 
-        with open(data_dir + "/txt_files/" + tmp, 'w') as text_file:
-            text_file.write(ing_res + '\n' + dir_res.response)
+            with open(data_dir + "/txt_files/" + tmp, 'w') as text_file:
+                text_file.write(ing_res + '\n' + dir_res.response)
+        else:
+            print(f'File already exists: {data_dir + "/txt_files/" + tmp}')
 
 
 def kg_triple_extractor(text: str,
@@ -216,13 +219,25 @@ def extract_recipe_kg(entity_types: Dict[str, str],
     for content in txt_docs:
         try:
             recipe_name = content.metadata['file_name'].split('.txt')[0]
-            extracted_relations = kg_triple_extractor(content.text, entity_types, relation_types, model, system_prompt,
-                                                      user_prompt)
-            extracted_relations = json.loads(extracted_relations)
-            with open(data_dir + '/kg_files/' + recipe_name + '.json', 'w') as f:
-                json.dump(extracted_relations, f)
+            file_name = data_dir + '/kg_files/' + recipe_name + '.json'
+            if not os.path.exists(file_name):
 
-            if verbose:
-                print(f'\n-----------\n{recipe_name}\n{extracted_relations}\n')
+                extracted_relations = kg_triple_extractor(content.text,
+                                                          entity_types,
+                                                          relation_types,
+                                                          model,
+                                                          system_prompt,
+                                                          user_prompt)
+
+                extracted_relations = json.loads(extracted_relations)
+                with open(file_name, 'w') as f:
+                    json.dump(extracted_relations, f)
+
+                if verbose:
+                    print(f'\n-----------\n{recipe_name}\n{extracted_relations}\n')
+            else:
+                print(f'File already exists: {file_name}')
+
         except Exception as e:
             print(e)
+

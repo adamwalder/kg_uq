@@ -28,6 +28,14 @@ Then install `ipykernel` and make the environment available to Jupyter,
 
 `python -m ipykernel install --user --name=kg_uq_venv`
 
+## Scraping https://www.allrecipes.com/
+
+For a fast scrape of https://www.allrecipes.com/, you can edit the file `./recipe_data/recipe_website_list.txt`. 
+Make sure you follow the required format. Once you are ready to scrape, open up `scrape_recipes.py` and input your OpenAI key.
+You should be able to run this file to scrape all the websites listed in `./recipe_data/recipe_website_list.txt`. 
+The extracted triples are stored in `/.recipe_data/kg_files`, which can then be used as in notebook 
+`./kg_notebooks/recipe_notebook_ex.ipynb`.
+
 ## PyTorch Geometric
 
 An example of a heterogenous GNN fit to the extracted recipe KG subgraphs is included in `./kg_notebooks/recipe_gnn.ipynb`. Extract more recipes and try out your own GNN fits. 

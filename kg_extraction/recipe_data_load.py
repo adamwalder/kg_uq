@@ -52,12 +52,16 @@ def get_recipe_kg(data_dir: str = './recipe_data') -> pd.DataFrame:
     kgs = get_recipe_subkgs(data_dir)
     y = []
     y_idx = []
+    y_lab = []
+
     for i, x in enumerate(kgs):
         y_idx.extend([i]*len(x[1]))
+        y_lab.extend([x[0]]*len(x[1]))
         y.extend(x[1])
 
     y = pd.DataFrame(y)
     y = y.assign(kg_idx=np.asarray(y_idx))
+    y = y.assign(kg_name=np.asarray(y_lab))
 
     return y
 
@@ -83,7 +87,16 @@ def kg_to_hetero(data_dir: str,
 
     """
     kg = get_recipe_kg(data_dir=data_dir)
-    nkgs = kg['kg_idx'].max() + 1
+
+    # clean data of any empty entries
+    bad_rows = np.bitwise_or(kg['tail'] == '', kg['tail_type'] == '')
+    bad_rows = np.bitwise_or(bad_rows, kg['head'] == '')
+    bad_rows = np.bitwise_or(bad_rows, kg['head_type'] == '')
+    bad_rows = np.bitwise_or(bad_rows, kg['relation'] == '')
+    kg = kg[~bad_rows].reset_index(drop=True)
+
+    # total number of subgraphs
+    kg_ids = kg['kg_idx'].unique()
 
     # count all features by node type, we'll use this for mapping embedded node features to HeteroData
     node_map, cnt = dict(), 0
@@ -131,7 +144,7 @@ def kg_to_hetero(data_dir: str,
 
     # set training data with mappings to correct embeddings for each node.
     train = []
-    for i in range(nkgs):
+    for i in kg_ids:
 
         data = HeteroData()
         for node_type in node_map.keys():

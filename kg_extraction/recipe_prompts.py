@@ -1,5 +1,5 @@
 from typing import Tuple
-
+### credit for user prompt to
 user_prompt = """Based on the following example, extract entities and relations from the provided text.
 Use the following entity types:
 
@@ -12,82 +12,114 @@ Use the following relation types:
 --> Beginning of example
 
 # Specification
-"YUVORA 3D Brick Wall Stickers | PE Foam Fancy Wallpaper for Walls,
- Waterproof & Self Adhesive, White Color 3D Latest Unique Design Wallpaper for Home (70*70 CMT) -40 Tiles
- [Made of soft PE foam,Anti Children's Collision,take care of your family.Waterproof, moist-proof and sound insulated. 
- Easy clean and maintenance with wet cloth,economic wall covering material.,Self adhesive peel and stick wallpaper, 
- Easy paste And removement .Easy To cut DIY the shape according to your room area,The embossed 3d wall sticker offers 
- stunning visual impact. the tiles are light, water proof, anti-collision, they can be installed in minutes over a 
- clean and sleek surface without any mess or specialized tools, and never crack with time.,Peel and stick 3d wallpaper 
- is also an economic wall covering material, they will remain on your walls for as long as you wish them to be. The 
- tiles can also be easily installed directly over existing panels or smooth surface.,Usage range: Featured walls, 
- Kitchen,bedroom,living room, dinning room,TV walls,sofa background,office wall decoration,etc. Don't use in shower 
- and rugged wall surface]. Provide high quality foam 3D wall panels self adhesive peel and stick wallpaper, made of 
- soft PE foam,children's collision, waterproof, moist-proof and sound insulated,easy cleaning and maintenance with wet 
- cloth,economic wall covering material, the material of 3D foam wallpaper is SAFE, easy to paste and remove . Easy to 
- cut DIY the shape according to your decor area. Offers best quality products. This wallpaper we are is a real 
- wallpaper with factory done self adhesive backing. You would be glad that you it. Product features High-density 
- foaming technology Total Three production processes Can be use of up to 10 years Surface Treatment: 3D Deep 
- Embossing Damask Pattern."
+"The nutritional content for baked apples consists of The nutritional information for baked apples includes: 147 
+calories, 1g fat, 37g carbs, and 1g protein. The following is preparation information for baked apples, prep time: 
+15 mins, cook time: 45 mins, total time: 1 hr, servings: 6. The ingredients for making baked apples are butter 
+(1 teaspoon), brown sugar (2 tablespoons), vanilla sugar (3 teaspoons), ground cinnamon (3 teaspoons), ground nutmeg 
+(1 teaspoon), large apples (6), water (3 ½ tablespoons). To make baked apples, preheat the oven to 350 degrees F. 
+Grease a large baking dish with butter. In a small bowl, mix brown sugar, vanilla sugar, cinnamon, and nutmeg. 
+Layer sliced apples in the baking dish, sprinkling each layer with the sugar mixture. Bake for 30 minutes, then pour 
+water over the apples and continue baking until tender, about 15 minutes more..."
 
 ################
 
 # Output
 [
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "isProducedBy",
-    "tail": "YUVORA",
-    "tail_type": "manufacturer"
-  }},
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "hasCharacteristic",
-    "tail": "Waterproof",
-    "tail_type": "characteristic"
-  }},
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "hasCharacteristic",
-    "tail": "Self Adhesive",
-    "tail_type": "characteristic"
-  }},
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "hasColor",
-    "tail": "White",
-    "tail_type": "color"
-  }},
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "hasMeasurement",
-    "tail": "70*70 CMT",
-    "tail_type": "measurement"
-  }},
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "hasMeasurement",
-    "tail": "40 tiles",
-    "tail_type": "measurement"
-  }},
-  {{
-    "head": "YUVORA 3D Brick Wall Stickers",
-    "head_type": "product",
-    "relation": "hasMeasurement",
-    "tail": "40 tiles",
-    "tail_type": "measurement"
-  }}
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "hasCharacteristic", 
+    "tail": "147 calories", 
+    "tail_type": "nutrition"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "hasCharacteristic", 
+    "tail": "1g fat", 
+    "tail_type": "nutrition"},
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "hasCharacteristic", 
+    "tail": "37g carbs", 
+    "tail_type": "nutrition"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "hasCharacteristic", "
+    tail": "1g protein", 
+    "tail_type": "nutrition"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "cookTime", 
+    "tail": "45 mins", "tail_type": 
+    "measurement"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "recipeInstruction", 
+    "tail": "preheat the oven to 350 degrees F", 
+    "tail_type": "instruction"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "recipeInstruction", 
+    "tail": "Grease a large baking dish with butter", 
+    "tail_type": "instruction"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "recipeInstruction", 
+    "tail": "mix brown sugar, vanilla sugar, cinnamon, and nutmeg", 
+    "tail_type": "instruction"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "recipeInstruction", 
+    "tail": "Layer sliced apples in the baking dish, sprinkling each layer with the sugar mixture", "
+    tail_type": "instruction"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "recipeInstruction", 
+    "tail": "Bake for 30 minutes", 
+    "tail_type": "instruction"}, 
+    {"head": "baked apples", 
+    "head_type": "recipe", 
+    "relation": "recipeInstruction", 
+    "tail": "pour water over the apples and continue baking until tender, about 15 minutes more", 
+    "tail_type": "instruction"}, 
+    {"head": "butter", 
+    "head_type": "ingredient", 
+    "relation": "hasMeasurement", 
+    "tail": "1 teaspoon", 
+    "tail_type": "measurement"}, 
+    {"head": "brown sugar", 
+    "head_type": "ingredient", 
+    "relation": "hasMeasurement", 
+    "tail": "2 tablespoons", 
+    "tail_type": "measurement"},
+    {"head": "vanilla sugar", 
+     "head_type": "ingredient", 
+     "relation": "hasMeasurement", 
+     "tail": "3 teaspoons", 
+     "tail_type": "measurement"}, 
+     {"head": "ground cinnamon", 
+     "head_type": "ingredient", 
+     "relation": "hasMeasurement", 
+     "tail": "3 teaspoons", 
+     "tail_type": "measurement"}, 
+     {"head": "ground nutmeg", 
+     "head_type": "ingredient", 
+     "relation": "hasMeasurement", 
+     "tail": "1 teaspoon", 
+     "tail_type": "measurement"}, 
+     {"head": "large apples", 
+     "head_type": "ingredient", 
+     "relation": "hasMeasurement", 
+     "tail": "6", 
+     "tail_type": "measurement"}, 
+     {"head": "water", 
+     "head_type": "ingredient", 
+     "relation": "hasMeasurement", 
+     "tail": "3 tablespoons", 
+     "tail_type": "measurement"}
 ]
 
 --> End of example
 
-For the following specification, generate extract entitites and relations as in the provided example.
+For the following specification, generate extract entities and relations as in the provided example.
 
 # Specification
 {specification}

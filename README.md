@@ -1,4 +1,5 @@
-# Extracting and training heterogeneous GNNs on knowledge graph triples with LLMs and PyTorch Geometric!
+# Extract knowledge graph triples from websites and train heterogeneous GNNs on the knowledge graphs!
+
 The repo contains helper functions for:
   - (1) Extracting knowledge graph triples (and context) from websites.
   - (2) Embeddings the extracted context.

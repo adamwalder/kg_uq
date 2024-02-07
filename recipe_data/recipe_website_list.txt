@@ -1,0 +1,33 @@
+Pies
+peanut butter pie, https://www.allrecipes.com/recipe/9174/peanut-butter-pie/
+cocnut pie, https://www.allrecipes.com/recipe/12506/coconut-pie/
+twix pie, https://www.allrecipes.com/twix-pie-recipe-7563548
+brownie pie, https://www.allrecipes.com/recipe/8487044/brownie-pie/
+perfect pumpkin pie, https://www.allrecipes.com/recipe/23439/perfect-pumpkin-pie/
+banana cream pie, https://www.allrecipes.com/recipe/12151/banana-cream-pie-i/
+
+Cakes
+chocolate stout cake, https://www.allrecipes.com/chocolate-stout-cake-recipe-8426369
+chocolate strawberry cheesecake, https://www.allrecipes.com/recipe/8497586/chocolate-strawberry-cheesecake/
+caramel cake, https://www.allrecipes.com/recipe/260883/caramel-cake/
+french apple cake, https://www.allrecipes.com/french-apple-cake-recipe-7963451
+
+Cookies
+pecan shortbread cookies, https://www.allrecipes.com/pecan-shortbread-cookies-recipe-8415352
+gooey butter cookies, https://www.allrecipes.com/recipe/16773/gooey-butter-cookies/
+lemon shortbread cookies, https://www.allrecipes.com/recipe/273880/lemon-butter-shortbread-cookies/
+nutella cookies, https://www.allrecipes.com/recipe/223312/nutella-hazelnut-cookies/
+chocolate cookies, https://www.allrecipes.com/recipe/10281/chewy-chocolate-cookies-ii/
+
+Healthy
+baked apples, https://www.allrecipes.com/recipe/228683/delicious-cinnamon-baked-apples/
+vanilla frozen yogurt, https://www.allrecipes.com/recipe/214953/vanilla-frozen-yogurt/
+healthier apple crisp, https://www.allrecipes.com/recipe/219433/healthier-apple-crisp-ii/
+healthy chocolate pudding, https://www.allrecipes.com/recipe/245489/healthy-chocolate-pudding/
+
+Candy
+carmel apple chocolate bark, https://www.allrecipes.com/recipe/8495585/caramel-apple-chocolate-bark/
+fudge, https://www.allrecipes.com/recipe/9368/fudge/
+oreo balls, https://www.allrecipes.com/recipe/229415/oreo-cookie-balls/
+bonbons, https://www.allrecipes.com/recipe/18995/bonbons/
+english toffee, https://www.allrecipes.com/recipe/27026/english-toffee/

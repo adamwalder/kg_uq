@@ -4,7 +4,7 @@ import sys
 open_ai_key = '...'
 os.environ['OPENAI_API_KEY'] = open_ai_key
 sys.path = ['/Users/walder2/kg_uq/'] + sys.path
-path_to_data = '/recipe_data'
+path_to_data = '/Users/walder2/kg_uq/recipe_data'
 
 from kg_extraction import *
 

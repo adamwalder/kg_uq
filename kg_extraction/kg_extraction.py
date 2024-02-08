@@ -1,7 +1,6 @@
 """Functions for scraping recipes as kg triples from https://www.allrecipes.com/."""
 
 import os
-
 open_ai_key = os.environ.get('OPENAI_API_KEY', None)
 
 import re
@@ -9,7 +8,6 @@ import json
 from typing import Dict, List, Optional, Tuple
 import requests
 from bs4 import *
-from openai import OpenAI as clientOpenAI
 
 from llama_index import (
     SimpleDirectoryReader,
@@ -19,7 +17,7 @@ from llama_index import (
 
 from llama_index.llms import OpenAI as OpenAI
 from llama_index.prompts import PromptTemplate
-from kg_extraction.recipe_prompts import get_recipe_prompts
+from kg_extraction.extraction_prompts import kg_triple_extractor
 
 dash_str = '-'.join([' ' for _ in range(30)])
 
@@ -220,69 +218,6 @@ def extract_ingredients_directions(data_dir: str,
 
     return txt_files if return_files else None
 
-
-def kg_triple_extractor(text: str,
-                        entity_types: Dict[str, str],
-                        relation_types: Dict[str, str],
-                        model: Optional[str] = "gpt-3.5-turbo",
-                        system_prompt: Optional[str] = None,
-                        user_prompt: Optional[str] = None):
-    """Get triples from recipe ingredients and directions. This has a call to OpenAI.
-
-    Note user must provide entity_types and relation_types E.g.)
-    Using schema.org
-        entity_types = {
-            "recipe": 'https://schema.org/Recipe',
-            "ingredient": "https://schema.org/recipeIngredient",
-            "measurement": "https://schema.org/QuantitativeValue",
-        }
-
-        relation_types = {
-            "hasCharacteristic": "https://schema.org/additionalProperty",
-            "hasColor": "https://schema.org/color",
-            "hasMeasurement": "https://schema.org/hasMeasurement",
-            "cookTime": "https://schema.org/cookTime",
-            "recipeInstruction": "https://schema.org/recipeInstructions"
-
-         }
-
-    If you want to change the system_prompt or user_prompt, please first see recipe_prompts.py. The user_prompt
-    must specify to return the KG as detailed!
-
-    :param text: Text to have entity, rel, entity extraction from
-    :param entity_types: Dictionary detailing entities and their format
-    :param relation_types: Dictionary detailing entities and their format
-    :param model: model used for extracting relationships. Default to gpt-3.5-turbo
-    :param system_prompt: Prompt for extraction task. See recipe_prompts.py for example.
-    :param user_prompt: Prompt for how triples should be extracted. See recipe_prompts.py for example
-    :return:
-    """
-    client = clientOpenAI(api_key=open_ai_key)
-
-    if system_prompt is None or user_prompt is None:
-        system_prompt, user_prompt = get_recipe_prompts()
-    completion = client.chat.completions.create(
-        model=model,
-        temperature=0,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": user_prompt.format(
-                    entity_types=entity_types,
-                    relation_types=relation_types,
-                    specification=text
-                )
-            }
-        ]
-    )
-
-    return completion.choices[0].message.content
-
-
 def extract_recipe_kg(data_dir: str,
                       entity_types: Dict[str, str],
                       relation_types: Dict[str, str],
@@ -310,7 +245,7 @@ def extract_recipe_kg(data_dir: str,
 
          }
 
-    If you want to change the system_prompt or user_prompt, please first see recipe_prompts.py. The user_prompt
+    If you want to change the system_prompt or user_prompt, please first see extraction_prompts.py. The user_prompt
     must specify to return the KG as detailed!
 
     :param data_dir: Default directory for storing recipe_kg.json files.
@@ -319,14 +254,31 @@ def extract_recipe_kg(data_dir: str,
     :param txt_files: List of strings to consider for triple extraction. Should be cleaned text.
     :param verbose: If true, the triples will be printed out as they are extracted.
     :param model: model used for extracting relationships. Default to gpt-3.5-turbo
-    :param system_prompt: Prompt for extraction task. See recipe_prompts.py for example.
-    :param user_prompt: Prompt for how triples should be extracted. See recipe_prompts.py for example
+    :param system_prompt: Prompt for extraction task. See extraction_prompts.py for example.
+    :param user_prompt: Prompt for how triples should be extracted. See extraction_prompts.py for example
     :return: None
     """
     if txt_files:
         txt_docs = SimpleDirectoryReader('/'.join([data_dir, 'txt_files'])).load_data()
     else:
         txt_docs = SimpleDirectoryReader(input_files=txt_files).load_data()
+
+    if system_prompt is None:
+        system_prompt = """
+        You are an expert agent specialized in analyzing recipes and ingredients.
+        Your task is to identify the entities and relations requested with the user prompt, from a set of recipe ingredients 
+        and directions.
+        You should capture relationships of the ingredients when possible.  
+        You must generate the output in a JSON containing a list with JOSN objects having the following keys: "head", 
+        "head_type", "relation", "tail", and "tail_type".
+        The "head" key must contain the text of the extracted entity with one of the types from the provided list in the 
+        user prompt, the "head_type"
+        key must contain the type of the extracted head entity which must be one of the types from the provided user list,
+        the "relation" key must contain the type of relation between the "head" and the "tail", the "tail" key must 
+        represent the text of an
+        extracted entity which is the tail of the relation, and the "tail_type" key must contain the type of the tail 
+        entity. Attempt to extract as many entities and relations as you can.
+        """
 
     for content in txt_docs:
         try:
@@ -352,5 +304,78 @@ def extract_recipe_kg(data_dir: str,
                 if verbose:
                     tmp = '/'.join(['./recipe_data/kg_files', re.sub(' ', '_', recipe_name) + '.json'])
                     print('\n'.join([dash_str + f'\n{repr(tmp)}', dash_str, f'Already extracted {recipe_name}.\n']))
+        except Exception as e:
+            print(e)
+
+
+def extract_kg(data_dir: str,
+               entity_types: Dict[str, str],
+               relation_types: Dict[str, str],
+               txt_files: Optional[List[str]] = None,
+               verbose: bool = False,
+               model: Optional[str] = "gpt-3.5-turbo",
+               system_prompt: Optional[str] = None,
+               user_prompt: Optional[str] = None) -> None:
+    """Extract and save kg triples into .json file in './data_dir/kg_files/' directory.
+
+    Note user must provide entity_types and relation_types E.g.)
+    Using schema.org
+        entity_types = {
+            "recipe": 'https://schema.org/Recipe',
+            "ingredient": "https://schema.org/recipeIngredient",
+            "measurement": "https://schema.org/QuantitativeValue",
+        }
+
+        relation_types = {
+            "hasCharacteristic": "https://schema.org/additionalProperty",
+            "hasColor": "https://schema.org/color",
+            "hasMeasurement": "https://schema.org/hasMeasurement",
+            "cookTime": "https://schema.org/cookTime",
+            "recipeInstruction": "https://schema.org/recipeInstructions"
+
+         }
+
+    If you want to change the system_prompt or user_prompt, please first see extraction_prompts.py. The user_prompt
+    must specify to return the KG as detailed!
+
+    :param data_dir: Default directory for storing kg triples --> ./kg_files.
+    :param entity_types: Dictionary detailing entities and their format
+    :param relation_types: Dictionary detailing entities and their format
+    :param txt_files: List of strings to consider for triple extraction. Should be cleaned text.
+    :param verbose: If true, the triples will be printed out as they are extracted.
+    :param model: model used for extracting relationships. Default to gpt-3.5-turbo
+    :param system_prompt: Prompt for extraction task. See extraction_prompts.py for example.
+    :param user_prompt: Prompt for how triples should be extracted. See extraction_prompts.py for example
+    :return: None
+    """
+    if txt_files:
+        txt_docs = SimpleDirectoryReader('/'.join([data_dir, 'txt_files'])).load_data()
+    else:
+        txt_docs = SimpleDirectoryReader(input_files=txt_files).load_data()
+
+    for content in txt_docs:
+        try:
+            content_name = content.metadata['file_name'].split('.txt')[0]
+            file_name = '/'.join([data_dir, 'kg_files', content_name + '.json'])
+            if not os.path.exists(file_name):
+
+                extracted_relations = kg_triple_extractor(content.text,
+                                                          entity_types,
+                                                          relation_types,
+                                                          model,
+                                                          system_prompt,
+                                                          user_prompt)
+
+                extracted_relations = json.loads(extracted_relations)
+                with open(file_name, 'w') as f:
+                    json.dump(extracted_relations, f)
+
+                if verbose:
+                    tmp = '/'.join(['./kg_files', re.sub(' ', '_', content_name) + '.json'])
+                    print('\n'.join([dash_str + f'\n{repr(tmp)}', dash_str, f'{extracted_relations}\n']))
+            else:
+                if verbose:
+                    tmp = '/'.join(['./kg_files', re.sub(' ', '_', content_name) + '.json'])
+                    print('\n'.join([dash_str + f'\n{repr(tmp)}', dash_str, f'Already extracted {content_name}.\n']))
         except Exception as e:
             print(e)

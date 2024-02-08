@@ -1,9 +1,10 @@
 # Extract knowledge graph triples from websites and train heterogeneous GNNs on the knowledge graphs!
 
 The repo contains helper functions for:
-  - (1) Extracting knowledge graph triples (and context) from websites.
-  - (2) Embeddings the extracted context.
+  - (1) Extract knowledge graph triples following a specified schema
+  - (2) Extracting knowledge graph triples (and context) from websites.
   - (3) Mapping the triples and embedded context to HeteroData() objects for fitting with PyTorch Geometric.
+  - (4) Uncertainty quantification with knowledge graphs. 
 
 ## Dependencies:
 The required dependencies are listed in `requirements.txt`. To get started with a python virtual environment:

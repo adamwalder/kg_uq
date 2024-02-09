@@ -1,0 +1,1 @@
+[{"head": "Yoshiyasua", "head_type": "thing", "relation": "isGenusOf", "tail": "Yoshiyasua yasudai", "tail_type": "thing"}, {"head": "Yoshiyasua yasudai", "head_type": "thing", "relation": "isFoundIn", "tail": "Japan", "tail_type": "place"}, {"head": "Yoshiyasua yasudai", "head_type": "thing", "relation": "isFoundIn", "tail": "Ryukyu Islands", "tail_type": "place"}]

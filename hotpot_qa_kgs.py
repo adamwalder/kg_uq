@@ -35,21 +35,21 @@ relation_types = {
 
 }
 
-from hotpot_qa_data.hotpot_data_load import load_hotpot_qa
+from hotpot_qa_data.hotpot_data_load import write_hotpot_to_txt
 
 if __name__ == "__main__":
 
-    hotpot_files = load_hotpot_qa(path_to_data=path_to_data, ndocs=2)
+    hotpot_files = write_hotpot_to_txt(path_to_data=path_to_data, ndocs=10)
 
     cnt = 0
     tot = sum([len(v['topics']) for v in hotpot_files.values()])
-
+    print('Starting extraction...')
     for hid in hotpot_files.keys():
         n = len(hotpot_files[hid]['topics'])
 
         extract_kg(entity_types=entity_types,
                    relation_types=relation_types,
                    data_dir=path_to_data,
-                   txt_files=hotpot_files[hid]['file_paths'])
+                   txt_files=hotpot_files[hid]['file_paths'], verbose=True)
         cnt += n
         print(f'Completed {cnt} out of {tot} kg extractions.')

@@ -1,0 +1,1 @@
+[{"head": "Indogrammodes", "head_type": "genus", "relation": "hasSpecies", "tail": "Indogrammodes pectinicornalis", "tail_type": "species"}, {"head": "Indogrammodes pectinicornalis", "head_type": "species", "relation": "isFoundIn", "tail": "India", "tail_type": "place"}]

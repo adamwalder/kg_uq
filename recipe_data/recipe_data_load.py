@@ -65,9 +65,9 @@ def get_recipe_kg(data_dir: str = './recipe_data') -> pd.DataFrame:
 
     return y
 
-def kg_to_hetero(data_dir: str,
-                 sentence_transformer_model: str = 'all-MiniLM-L6-v2',
-                 undirected: bool = False) -> Dict[str, Union[List[HeteroData], pd.DataFrame,
+def recipe_kg_to_hetero(data_dir: str,
+                        sentence_transformer_model: str = 'all-MiniLM-L6-v2',
+                        undirected: bool = False) -> Dict[str, Union[List[HeteroData], pd.DataFrame,
                                                               Tuple[Dict[str, Dict[str, int]], Dict[str, tn.Tensor]]]]:
     """Returns a dictionary containing sequence of HeteroData with embedded features for each subgraph in kg.
 

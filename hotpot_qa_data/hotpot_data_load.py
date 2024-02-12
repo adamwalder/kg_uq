@@ -96,7 +96,7 @@ def load_hotpot_kgs(path_to_data: str, query_answer: bool = False) -> \
                 qa = json.load(f)
             return y, qa
         else:
-            return y
+            return y, None
 
     else:
         raise Exception('You need to scrape the txt_files and write to kg_files.')

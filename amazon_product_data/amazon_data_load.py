@@ -13,6 +13,27 @@ from sentence_transformers import SentenceTransformer
 from torch_geometric.data import HeteroData
 
 
+def top_product_select(path_to_data: str = './amazon_product_data', path_to_csv: str = './amazon_product.csv') -> None:
+    """Trim amazon_product_data.csv to top 50 results and store in pkl file.
+
+    :param path_to_data: Path to './kg_uq
+    :param path_to_csv: Path to `amazon_product.csv` download
+    :return:
+    """
+    data = pd.read_csv(path_to_csv)
+
+    ## remove the NAs
+    data = data[~np.bitwise_or(data.isnull().any(axis=1), data.isna().any(axis=1))]
+    data = data.reset_index(drop=True)
+
+    ## get top n_types product by product_type_id
+    top_50 = data['PRODUCT_TYPE_ID'].value_counts().keys()[:50].values
+    data = data[np.any(data['PRODUCT_TYPE_ID'].values == top_50[:, None], axis=0)]
+
+    # write to csv
+    with open('/'.join([path_to_data, 'amazon_product.pkl']), 'wb') as f:
+        json.dump(data, f)
+
 def get_top_product_types(data: Optional[pd.DataFrame] = None,
                           data_path: Optional[str] = None,
                           n_types: int = 10,

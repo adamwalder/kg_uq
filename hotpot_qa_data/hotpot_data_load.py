@@ -29,7 +29,7 @@ def write_hotpot_to_txt(path_to_data: str, ndocs: int = 10) -> Dict[str, Dict[st
             x = dataset['train'][i]
             topics = [re.sub(pattern, '', y).lower() for y in x['context']['title']]
             hotpot_files[x['id']] = {'topics': [], 'file_paths': []}
-            query_answer.append({'query': x['query'], 'answer': x['answer']})
+            query_answer.append({'query': x['question'], 'answer': x['answer']})
 
             for j in range(len(topics)):
                 file_name = '/'.join([path_to_data, 'txt_files', re.sub(' ', '_', topics[j]) + '.txt'])

@@ -11,6 +11,7 @@ chocolate stout cake, https://www.allrecipes.com/chocolate-stout-cake-recipe-842
 chocolate strawberry cheesecake, https://www.allrecipes.com/recipe/8497586/chocolate-strawberry-cheesecake/
 caramel cake, https://www.allrecipes.com/recipe/260883/caramel-cake/
 french apple cake, https://www.allrecipes.com/french-apple-cake-recipe-7963451
+hummingbird cake, https://www.allrecipes.com/recipe/15750/hummingbird-cake/
 
 Cookies
 pecan shortbread cookies, https://www.allrecipes.com/pecan-shortbread-cookies-recipe-8415352
@@ -31,3 +32,38 @@ fudge, https://www.allrecipes.com/recipe/9368/fudge/
 oreo balls, https://www.allrecipes.com/recipe/229415/oreo-cookie-balls/
 bonbons, https://www.allrecipes.com/recipe/18995/bonbons/
 english toffee, https://www.allrecipes.com/recipe/27026/english-toffee/
+
+Soup
+creamy chicken vegetable soup, https://www.allrecipes.com/creamy-chicken-vegetable-soup-recipe-8594569
+egg drop soup, https://www.allrecipes.com/recipe/115965/egg-drop-soup-better-than-restaurant-quality/
+chef john's chicken tortilla soup, https://www.allrecipes.com/chef-john-s-chicken-tortilla-soup-recipe-8378788
+chicken zoodle soup in a jar, https://www.allrecipes.com/chicken-zoodle-soup-in-a-jar-recipe-8364198
+chicken noodle soup, https://www.allrecipes.com/recipe/8562/chicken-noodle-soup/
+
+Salads
+roasted butternut squash salad, https://www.allrecipes.com/recipe/276540/roasted-butternut-squash-salad-with-bacon-and-onions/
+greek couscous salad, https://www.allrecipes.com/recipe/218225/greek-couscous/
+pecan chicken salad, https://www.allrecipes.com/recipe/280690/pecan-chicken-salad/
+carrot rasin salad, https://www.allrecipes.com/recipe/8458932/carrot-raisin-salad/
+apple spinach salad, https://www.allrecipes.com/recipe/129820/apple-spinach-salad/
+
+Sandwiches
+pepperoni pizza grilled cheese, https://www.allrecipes.com/pepperoni-pizza-grilled-cheese-recipe-8563863
+pizza grilled cheese sandwich, https://www.allrecipes.com/pizza-grilled-cheese-sandwich-recipe-8563827
+tuna and artichoke wraps, https://www.allrecipes.com/tuna-and-artichoke-wraps-recipe-8406932
+baked italian sub, https://www.allrecipes.com/baked-italian-sub-recipe-7570313
+sloppy joes, https://www.allrecipes.com/recipe/24264/sloppy-joes-ii/
+
+StirFry
+beef and green bean stir fry, https://www.allrecipes.com/beef-and-green-bean-stir-fry-recipe-8362946
+shrimp and pepper stir fry, https://www.allrecipes.com/shrimp-and-pepper-stir-fry-recipe-7643060
+mango chicken stir fry, https://www.allrecipes.com/recipe/8527054/mango-chicken-stir-fry/
+pork stir fry, https://www.allrecipes.com/recipe/241091/pork-stir-fry/
+ginger veggie stir fry, https://www.allrecipes.com/recipe/24712/ginger-veggie-stir-fry/
+
+Pizza
+easy homemade pizza dough, https://www.allrecipes.com/recipe/20171/quick-and-easy-pizza-crust/
+no yeast pizza crust, https://www.allrecipes.com/recipe/244638/no-yeast-pizza-crust/
+thin crust pizza dough, https://www.allrecipes.com/recipe/257198/thin-crust-pizza-dough/
+tavern pizza, https://www.allrecipes.com/tavern-pizza-recipe-7496725
+south shore bar pizza, https://www.allrecipes.com/south-shore-bar-pizza-recipe-7568213

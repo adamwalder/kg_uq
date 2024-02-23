@@ -1,0 +1,1 @@
+[{"head": "KD D\u00e9cor Poster", "head_type": "product", "relation": "isProducedBy", "tail": "KD", "tail_type": "manufacturer"}, {"head": "KD D\u00e9cor Poster", "head_type": "product", "relation": "hasMeasurement", "tail": "A3 Size", "tail_type": "measurement"}]

@@ -1,7 +1,12 @@
 
 import os
+import json
+import asyncio
+from typing import Dict, Optional, Tuple, Sequence
+from llama_index import Document
 from openai import OpenAI as clientOpenAI
-from typing import Dict, Tuple, Optional, Tuple
+from openai import AsyncOpenAI
+
 open_ai_key = os.environ.get('OPENAI_API_KEY', None)
 
 DEFAULT_USER_PROMPT = """Based on the following example, extract entities and relations from the provided text.
@@ -125,68 +130,89 @@ def get_prompts() -> Tuple[str, str]:
     """
     return DEFAULT_SYSTEM_PROMPT, DEFAULT_USER_PROMPT
 
+class TripleExtractor:
+    def __init__(self,
+                 entity_types: Dict[str, str],
+                 relation_types: Dict[str, str],
+                 model: Optional[str] = "gpt-3.5-turbo",
+                 system_prompt: Optional[str] = None,
+                 user_prompt: Optional[str] = None) -> None:
+        """Get triples from recipe ingredients and directions. This has a call to OpenAI.
 
-def kg_triple_extractor(text: str,
-                        entity_types: Dict[str, str],
-                        relation_types: Dict[str, str],
-                        model: Optional[str] = "gpt-3.5-turbo",
-                        system_prompt: Optional[str] = None,
-                        user_prompt: Optional[str] = None):
-    """Get triples from recipe ingredients and directions. This has a call to OpenAI.
-
-    Note user must provide entity_types and relation_types E.g.)
-    Using schema.org
-        entity_types = {
-            "recipe": 'https://schema.org/Recipe',
-            "ingredient": "https://schema.org/recipeIngredient",
-            "measurement": "https://schema.org/QuantitativeValue",
-        }
-
-        relation_types = {
-            "hasCharacteristic": "https://schema.org/additionalProperty",
-            "hasColor": "https://schema.org/color",
-            "hasMeasurement": "https://schema.org/hasMeasurement",
-            "cookTime": "https://schema.org/cookTime",
-            "recipeInstruction": "https://schema.org/recipeInstructions"
-
-         }
-
-    If you want to change the system_prompt or user_prompt, please first see extraction_prompts.py. The user_prompt
-    must specify to return the KG as detailed!
-
-    :param text: Text to have entity, rel, entity extraction from
-    :param entity_types: Dictionary detailing entities and their format
-    :param relation_types: Dictionary detailing entities and their format
-    :param model: model used for extracting relationships. Default to gpt-3.5-turbo
-    :param system_prompt: Prompt for extraction task. See extraction_prompts.py for example.
-    :param user_prompt: Prompt for how triples should be extracted. See extraction_prompts.py for example
-    :return:
-    """
-    client = clientOpenAI(api_key=open_ai_key)
-
-    if user_prompt is None:
-        _, user_prompt = get_prompts()
-
-    if system_prompt is None:
-        system_prompt, user_prompt = get_prompts()
-
-    completion = client.chat.completions.create(
-        model=model,
-        temperature=0,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": user_prompt.format(
-                    entity_types=entity_types,
-                    relation_types=relation_types,
-                    specification=text
-                )
+        Note user must provide entity_types and relation_types E.g.)
+        Using schema.org
+            entity_types = {
+                "recipe": 'https://schema.org/Recipe',
+                "ingredient": "https://schema.org/recipeIngredient",
+                "measurement": "https://schema.org/QuantitativeValue",
             }
-        ]
-    )
 
-    return completion.choices[0].message.content
+            relation_types = {
+                "hasCharacteristic": "https://schema.org/additionalProperty",
+                "hasColor": "https://schema.org/color",
+                "hasMeasurement": "https://schema.org/hasMeasurement",
+                "cookTime": "https://schema.org/cookTime",
+                "recipeInstruction": "https://schema.org/recipeInstructions"
+
+             }
+
+        If you want to change the system_prompt or user_prompt, please first see extraction_prompts.py. The user_prompt
+        must specify to return the KG as detailed!
+
+        :param text: Text to have entity, rel, entity extraction from
+        :param entity_types: Dictionary detailing entities and their format
+        :param relation_types: Dictionary detailing entities and their format
+        :param model: model used for extracting relationships. Default to gpt-3.5-turbo
+        :param system_prompt: Prompt for extraction task. See extraction_prompts.py for example.
+        :param user_prompt: Prompt for how triples should be extracted. See extraction_prompts.py for example
+        :return:
+        """
+        self.client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+        if user_prompt is None:
+            _, user_prompt = get_prompts()
+
+        if system_prompt is None:
+            system_prompt, user_prompt = get_prompts()
+
+        self.system_prompt = system_prompt
+        self.user_prompt = user_prompt
+        self.entity_types = entity_types
+        self.relation_types = relation_types
+        self.model = model if model is not None else "gpt-3.5-turbo"
+
+    async def run_query(self, text: str, file_name: str, kg_name: str) -> Tuple[Optional[str], str, str]:
+        if not os.path.exists(file_name):
+            completion = await self.client.chat.completions.create(
+                model=self.model,
+                temperature=0,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": self.system_prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": self.user_prompt.format(
+                            entity_types=self.entity_types,
+                            relation_types=self.relation_types,
+                            specification=text
+                        )
+                    }
+                ]
+            )
+
+            return json.loads(completion.choices[0].message.content), file_name, kg_name
+
+        else:
+            return None, file_name, kg_name
+
+    def extract_triples(self,
+                        text_prompts: Sequence[Document],
+                        file_names: Sequence[str],
+                        kg_names: Sequence[str]) -> Sequence[Tuple[Optional[str], str, str]]:
+        tasks = [self.run_query(x[0].text, x[1], x[2]) for x in zip(text_prompts, file_names, kg_names)]
+
+        return asyncio.run(asyncio.gather(*tasks))
+
+
